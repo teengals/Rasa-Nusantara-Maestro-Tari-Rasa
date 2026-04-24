@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rasa Nusantara - Maestro Tari & Rasa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Marcellus&family=Poppins:wght@300;400;600;800&display=swap');
+        
+        :root {
+            --indonesia-red: #e02b2b;
+            --batik-gold: #c5a059;
+            --jingga-pekat: #ff6600;
+            --pink-pastel: #ffb3ba;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #fdf6e3;
+            background-image: url("https://www.transparenttextures.com/patterns/batik-parang.png");
+            color: #3e2723;
+        }
+
+        h1, h2, h3 { font-family: 'Marcellus', serif; }
+
+        .key-correct { background-color: var(--jingga-pekat) !important; color: white !important; box-shadow: 0 4px 0 #cc5500; transition: all 0.3s ease; }
+        .key-wrong { background-color: var(--pink-pastel) !important; color: #5d4037 !important; transition: all 0.3s ease; }
+        
+        .letter-slot {
+            width: 40px;
+            height: 55px;
+            border-bottom: 4px solid var(--batik-gold);
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin: 4px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #1a1a1a;
+        }
+
+        .indonesia-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 30px;
+            border: 6px solid var(--batik-gold);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+        }
+
+        .skin-card {
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 3px solid transparent;
+        }
+        .skin-card.selected {
+            border-color: var(--jingga-pekat);
+            background-color: #fff4ed;
+            transform: scale(1.05);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        .avatar-img { animation: float 4s ease-in-out infinite; }
+
+        .btn-nusantara {
+            background: linear-gradient(135deg, #e02b2b 0%, #a81d1d 100%);
+            box-shadow: 0 6px 0 #7a1515;
+            transition: all 0.1s ease;
+        }
+        .btn-nusantara:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #7a1515;
+        }
+    </style>
+</head>
+<body class="min-h-screen overflow-x-hidden">
+
+<div id="app" class="p-4 md:p-8 max-w-6xl mx-auto">
+    <!-- 1. Screen: Profiling & Skin Selection -->
+    <div id="screen-profile" class="indonesia-card p-8 md:p-12">
+        <div class="text-center mb-10">
+            <div class="flex justify-center gap-4 mb-4">
+                <span class="text-4xl">🇮🇩</span>
+            </div>
+            <h1 class="text-5xl font-black text-red-800 tracking-widest uppercase">Rasa Nusantara</h1>
+            <p class="text-gray-500 italic mt-2">Masukan Identitas Maestro dan Pilih Kostum Tari Anda</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <!-- Form Pemain 1 -->
+            <div id="form-p1" class="space-y-6 p-6 bg-orange-50/50 rounded-3xl border-2 border-orange-100">
+                <h3 class="font-black text-2xl text-orange-600 border-b-4 border-orange-200 pb-2">MAESTRO 1</h3>
+                <div class="space-y-4">
+                    <input type="text" id="p1-name" placeholder="Nama Maestro 1" class="w-full p-4 border-2 border-white rounded-2xl outline-none focus:border-orange-500 shadow-sm text-lg font-bold">
+                    <div class="flex gap-4">
+                        <select id="p1-gender" class="flex-1 p-3 border-2 border-white rounded-xl font-bold bg-white cursor-pointer">
+                            <option value="L">♂ Laki-laki</option>
+                            <option value="P">♀ Perempuan</option>
+                        </select>
+                        <select id="p1-title" class="flex-1 p-3 border-2 border-white rounded-xl font-bold bg-white cursor-pointer">
+                            <option>Pendekar Rasa</option>
+                            <option>Sultan Bumbu</option>
+                            <option>Pencari Rempah</option>
+                        </select>
+                    </div>
+                </div>
+                <p class="text-sm font-black text-orange-800 uppercase tracking-tighter">Pilih Kostum Tari:</p>
+                <div class="grid grid-cols-3 gap-3" id="p1-skins"></div>
+            </div>
+
+            <!-- Form Pemain 2 -->
+            <div id="form-p2" class="space-y-6 p-6 bg-red-50/50 rounded-3xl border-2 border-red-100">
+                <h3 class="font-black text-2xl text-red-700 border-b-4 border-red-200 pb-2">MAESTRO 2</h3>
+                <div class="space-y-4">
+                    <input type="text" id="p2-name" placeholder="Nama Maestro 2" class="w-full p-4 border-2 border-white rounded-2xl outline-none focus:border-red-500 shadow-sm text-lg font-bold">
+                    <div class="flex gap-4">
+                        <select id="p2-gender" class="flex-1 p-3 border-2 border-white rounded-xl font-bold bg-white cursor-pointer">
+                            <option value="L">♂ Laki-laki</option>
+                            <option value="P">♀ Perempuan</option>
+                        </select>
+                        <select id="p2-title" class="flex-1 p-3 border-2 border-white rounded-xl font-bold bg-white cursor-pointer">
+                            <option>Ahli Kuliner</option>
+                            <option>Duta Rasa</option>
+                            <option>Jawara Pedas</option>
+                        </select>
+                    </div>
+                </div>
+                <p class="text-sm font-black text-red-800 uppercase tracking-tighter">Pilih Kostum Tari:</p>
+                <div class="grid grid-cols-3 gap-3" id="p2-skins"></div>
+            </div>
+        </div>
+
+        <button onclick="startGame()" class="w-full mt-12 btn-nusantara text-white py-5 rounded-3xl font-black text-2xl uppercase tracking-widest shadow-xl">
+            MASUKI PANGGUNG RASA
+        </button>
+    </div>
+
+    <!-- 2. Screen: Level & Challenge Map -->
+    <div id="screen-map" class="hidden animate-fadeIn">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-black text-red-900 mb-2 uppercase italic">Peta Kuliner Maestro</h2>
+            <div class="h-1 w-40 bg-red-800 mx-auto rounded-full"></div>
+        </div>
+        
+        <div id="level-tabs" class="flex flex-wrap justify-center gap-4 mb-10"></div>
+        <div id="challenge-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+        <div class="mt-12 text-center">
+            <button onclick="backToProfile()" class="text-gray-500 font-bold hover:text-red-700 transition underline">Ganti Identitas</button>
+        </div>
+    </div>
+
+    <!-- 3. Screen: Arena Quiz -->
+    <div id="screen-arena" class="hidden">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <div class="bg-white px-8 py-3 rounded-full border-b-4 border-orange-600 shadow-lg flex items-center gap-4">
+                <span class="text-sm font-black text-orange-600 uppercase italic">Giliran:</span>
+                <div id="turn-display" class="font-black text-2xl text-red-800 uppercase tracking-tighter"></div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div id="timer-arena" class="text-3xl font-black text-white bg-red-700 px-8 py-2 rounded-2xl shadow-lg border-b-4 border-red-900">00:00</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Avatar Area -->
+            <div class="lg:col-span-1 indonesia-card p-8 flex flex-col items-center justify-center text-center">
+                <div id="active-avatar" class="text-9xl mb-6 avatar-img filter drop-shadow-xl"></div>
+                <h4 id="active-name" class="font-black text-2xl text-gray-800 uppercase"></h4>
+                <p id="active-title" class="text-sm text-orange-600 font-black uppercase mb-6"></p>
+                <div class="w-full h-1 bg-gray-100 rounded-full mb-6"></div>
+                <div id="active-lives" class="flex gap-2 text-3xl"></div>
+            </div>
+
+            <!-- Quiz Main -->
+            <div class="lg:col-span-3 indonesia-card p-10 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-xl">💡</div>
+                        <p id="quiz-hint" class="font-bold text-gray-700 italic text-lg leading-relaxed"></p>
+                    </div>
+                    <div id="word-slots" class="flex flex-wrap justify-center gap-2 mb-12 min-h-[100px] items-center"></div>
+                </div>
+
+                <div id="keyboard" class="grid grid-cols-7 sm:grid-cols-9 gap-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Unified Modal -->
+<div id="modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-50 p-6 backdrop-blur-md">
+    <div class="bg-white rounded-[40px] p-12 max-w-lg w-full text-center border-[12px] border-yellow-600 shadow-[0_0_100px_rgba(0,0,0,0.5)]">
+        <div id="modal-icon" class="text-8xl mb-6">🏆</div>
+        <h3 id="modal-title" class="text-4xl font-black mb-4 text-red-800 uppercase italic">Hebat!</h3>
+        <p id="modal-msg" class="text-gray-600 mb-8 font-bold text-lg leading-relaxed"></p>
+        
+        <div id="modal-stats" class="grid grid-cols-1 gap-4 mb-10">
+            <div class="bg-orange-50 p-4 rounded-3xl border-4 border-orange-200">
+                <p class="text-xs font-black text-orange-800 uppercase">Durasi Pengerjaan</p>
+                <p id="modal-time" class="text-3xl font-black text-orange-600">0s</p>
+            </div>
+        </div>
+
+        <button id="modal-btn" class="w-full btn-nusantara text-white py-5 rounded-2xl font-black text-2xl uppercase shadow-lg">Lanjut</button>
+    </div>
+</div>
+
+<script>
+    // --- DATABASE MAKANAN ---
+    const FOOD_DB = {
+        1: [ // Level 1 (Easy - 60s)
+            { word: "PEMPEK", hint: "Ikan tenggiri asal Palembang, dimakan dengan cuko", diff: "easy" },
+            { word: "RENDANG", hint: "Daging bumbu rempah asal Minang, masakan terlezat dunia", diff: "easy" },
+            { word: "SATE", hint: "Daging tusuk bakar nusantara dengan bumbu kacang/kecap", diff: "easy" },
+            { word: "GUDEG", hint: "Olahan nangka manis khas Jogja yang dimasak lama", diff: "easy" },
+            { word: "SOTO", hint: "Sup berkuah hangat dengan suwiran ayam/daging", diff: "easy" },
+            { word: "KERAK TELOR", hint: "Jajanan gurih telur bebek dan kelapa khas Betawi", diff: "easy" },
+            { word: "PAPEDA", hint: "Bubur sagu kenyal bening dari Papua dan Maluku", diff: "easy" }
+        ],
+        2: [
+            { word: "GADO GADO", hint: "Salad sayur siram saus kacang gurih", diff: "easy" },
+            { word: "MIE ACEH", hint: "Mie tebal dengan bumbu rempah kuat khas Serambi Mekkah", diff: "easy" },
+            { word: "RAWON", hint: "Sup daging berkuah hitam karena biji kluwek", diff: "easy" },
+            { word: "BIKA AMBON", hint: "Kue kuning bersarang dari Medan, bukan Ambon", diff: "easy" },
+            { word: "PEPES", hint: "Cara masak ikan/tahu dalam bungkusan daun pisang", diff: "easy" }
+        ],
+        3: [
+            { word: "AYAM TALIWANG", hint: "Ayam bakar pedas menggigit khas Lombok", diff: "easy" },
+            { word: "COTO MAKASSAR", hint: "Sup jeroan sapi kuah kacang kental dari Sulawesi Selatan", diff: "easy" },
+            { word: "KLAPPERTAART", hint: "Kue lembut isi kelapa muda khas Manado", diff: "easy" },
+            { word: "NASI LIWET", hint: "Nasi gurih harum khas Solo/Sunda", diff: "easy" }
+        ],
+        4: [ // Level 4 (Hard - 120s)
+            { word: "PINDANG PATIN", hint: "Sup ikan sungai rasa asam pedas segar khas Palembang", diff: "hard" },
+            { word: "SOP KONRO", hint: "Iga sapi bakar/rebus dengan kuah kaya rempah Makassar", diff: "hard" },
+            { word: "NASI BEBEK BETUTU", hint: "Bebek bumbu genep yang dikukus/bakar khas Bali", diff: "hard" },
+            { word: "KUE LAPIS LEGIT", hint: "Kue berlapis banyak yang butuh ketelatenan tinggi", diff: "hard" }
+        ],
+        5: [ // Level 5 (Hard - 120s)
+            { word: "BUBUR TINUTUAN", hint: "Bubur sayuran lengkap tanpa daging dari Manado", diff: "hard" },
+            { word: "AYAM TANGKAP", hint: "Ayam goreng tersembunyi di balik tumpukan daun rempah Aceh", diff: "hard" },
+            { word: "NASI KRAWU", hint: "Nasi daging suwir khas Gresik beralaskan daun pisang", diff: "hard" },
+            { word: "SATE LILIT", hint: "Daging cincang lilit batang sereh khas Pulau Dewata", diff: "hard" }
+        ]
+    };
+
+    const SKINS = [
+        { id: 'saman', name: 'Tari Saman', icon: '👳' },
+        { id: 'piring', name: 'Tari Piring', icon: '🍽️' },
+        { id: 'kecak', name: 'Tari Kecak', icon: '🔥' },
+        { id: 'pendet', name: 'Tari Pendet', icon: '🌸' },
+        { id: 'jaipong', name: 'Tari Jaipong', icon: '💃' },
+        { id: 'reog', name: 'Tari Reog', icon: '🐯' },
+        { id: 'topeng', name: 'Tari Topeng', icon: '🎭' },
+        { id: 'serimpi', name: 'Tari Serimpi', icon: '👸' },
+        { id: 'kuda', name: 'Kuda Lumping', icon: '🐎' }
+    ];
+
+    let state = {
+        currentLevel: 1,
+        p1: { name: "Pemain 1", gender: "L", title: "Pendekar", skin: null, progress: 1, lastTime: 0, lives: 3 },
+        p2: { name: "Pemain 2", gender: "P", title: "Maestro", skin: null, progress: 1, lastTime: 0, lives: 3 },
+        game: {
+            turn: 1,
+            word: "",
+            hint: "",
+            guessed: [],
+            timer: 60,
+            interval: null,
+            startTime: null,
+            challengeNum: 1
+        }
+    };
+
+    function init() {
+        renderSkins('p1');
+        renderSkins('p2');
+    }
+
+    function renderSkins(pId) {
+        const container = document.getElementById(`${pId}-skins`);
+        container.innerHTML = "";
+        SKINS.forEach(skin => {
+            const div = document.createElement('div');
+            div.className = `skin-card p-3 rounded-2xl text-center bg-white shadow-sm`;
+            div.innerHTML = `<div class="text-3xl mb-1">${skin.icon}</div><div class="text-[9px] font-black uppercase text-gray-400">${skin.name}</div>`;
+            div.onclick = () => {
+                state[pId].skin = skin;
+                container.querySelectorAll('.skin-card').forEach(c => c.classList.remove('selected'));
+                div.classList.add('selected');
+            };
+            container.appendChild(div);
+        });
+    }
+
+    function startGame() {
+        state.p1.name = document.getElementById('p1-name').value || "Maestro 1";
+        state.p2.name = document.getElementById('p2-name').value || "Maestro 2";
+        state.p1.gender = document.getElementById('p1-gender').value;
+        state.p2.gender = document.getElementById('p2-gender').value;
+        state.p1.title = document.getElementById('p1-title').value;
+        state.p2.title = document.getElementById('p2-title').value;
+
+        if (!state.p1.skin || !state.p2.skin) {
+            alert("Kedua pemain harus memilih kostum tari!");
+            return;
+        }
+
+        showMap();
+    }
+
+    function showMap() {
+        document.getElementById('screen-profile').classList.add('hidden');
+        document.getElementById('screen-arena').classList.add('hidden');
+        document.getElementById('screen-map').classList.remove('hidden');
+        
+        const tabs = document.getElementById('level-tabs');
+        tabs.innerHTML = "";
+        for(let l=1; l<=5; l++) {
+            const btn = document.createElement('button');
+            const isUnlocked = l <= state.p1.progress; // Simplified progression
+            btn.className = `px-6 py-2 rounded-full font-black uppercase text-sm border-b-4 transition ${state.currentLevel === l ? 'bg-red-700 text-white border-red-900' : 'bg-white text-red-800 border-gray-200'}`;
+            btn.innerText = `Level ${l}`;
+            btn.onclick = () => {
+                if(isUnlocked) {
+                    state.currentLevel = l;
+                    showMap();
+                }
+            };
+            if(!isUnlocked) btn.style.opacity = "0.4";
+            tabs.appendChild(btn);
+        }
+
+        const container = document.getElementById('challenge-list');
+        container.innerHTML = "";
+        for (let i = 1; i <= 5; i++) {
+            // Logika terkunci: level dan tantangan sebelumnya harus selesai
+            const isLocked = (state.currentLevel > 1 && i > 1 && !checkProgress(state.currentLevel, i-1));
+            const div = document.createElement('div');
+            div.className = `indonesia-card p-6 flex justify-between items-center transition ${isLocked ? 'opacity-40 grayscale pointer-events-none' : 'cursor-pointer hover:border-orange-500 hover:-translate-y-1'}`;
+            div.innerHTML = `
+                <div>
+                    <h4 class="font-black text-xl text-red-800">TANTANGAN ${i}</h4>
+                    <p class="text-xs text-gray-400 font-bold uppercase">${state.currentLevel === 1 ? 'Sub-Tantangan Level 1' : 'Tingkat Maestro'}</p>
+                </div>
+                <div class="text-3xl">${isLocked ? '🔒' : '🎭'}</div>
+            `;
+            if (!isLocked) div.onclick = () => startChallenge(i);
+            container.appendChild(div);
+        }
+    }
+
+    function checkProgress(lvl, ch) {
+        // Logika progres sederhana untuk demo
+        return true; 
+    }
+
+    function startChallenge(num) {
+        state.game.challengeNum = num;
+        state.game.turn = 1; // Pemain 1 Mulai Dulu
+        loadQuizForCurrentPlayer();
+    }
+
+    function loadQuizForCurrentPlayer() {
+        const p = state[`p${state.game.turn}`];
+        const db = FOOD_DB[state.currentLevel];
+        
+        // Ambil random word yang berbeda setiap kali pengulangan
+        const randomItem = db[Math.floor(Math.random() * db.length)];
+        
+        state.game.word = randomItem.word;
+        state.game.hint = randomItem.hint;
+        state.game.guessed = [];
+        p.lives = 3;
+        state.game.timer = randomItem.diff === "easy" ? 60 : 120;
+        state.game.startTime = Date.now();
+
+        document.getElementById('screen-map').classList.add('hidden');
+        document.getElementById('screen-arena').classList.remove('hidden');
+        
+        updateArenaUI();
+        startTimer();
+    }
+
+    function updateArenaUI() {
+        const p = state[`p${state.game.turn}`];
+        document.getElementById('turn-display').innerText = p.name;
+        document.getElementById('active-name').innerText = p.name;
+        document.getElementById('active-title').innerText = p.title;
+        document.getElementById('active-avatar').innerText = p.skin.icon;
+        document.getElementById('quiz-hint').innerText = state.game.hint;
+        
+        updateLivesUI();
+        renderWordSlots();
+        renderKeyboardUI();
+    }
+
+    function renderWordSlots() {
+        const container = document.getElementById('word-slots');
+        container.innerHTML = "";
+        [...state.game.word].forEach(char => {
+            const slot = document.createElement('div');
+            slot.className = "letter-slot";
+            if (char === " ") {
+                slot.style.border = "none";
+                slot.style.width = "20px";
+            } else if (state.game.guessed.includes(char)) {
+                slot.innerText = char;
+            }
+            container.appendChild(slot);
+        });
+    }
+
+    function renderKeyboardUI() {
+        const container = document.getElementById('keyboard');
+        container.innerHTML = "";
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(char => {
+            const btn = document.createElement('button');
+            btn.className = "p-3 font-black bg-white border-b-4 border-gray-200 rounded-xl hover:border-orange-500 transition active:translate-y-1 active:border-b-0";
+            btn.innerText = char;
+            
+            if (state.game.guessed.includes(char)) {
+                if (state.game.word.includes(char)) {
+                    btn.classList.add('key-correct');
+                } else {
+                    btn.classList.add('key-wrong');
+                }
+                btn.disabled = true;
+            }
+
+            btn.onclick = () => handleGuess(char, btn);
+            container.appendChild(btn);
+        });
+    }
+
+    function handleGuess(char, btn) {
+        if (state.game.guessed.includes(char) || state.game.timer <= 0) return;
+
+        state.game.guessed.push(char);
+        if (state.game.word.includes(char)) {
+            btn.classList.add('key-correct');
+            renderWordSlots();
+            checkVictory();
+        } else {
+            btn.classList.add('key-wrong');
+            state[`p${state.game.turn}`].lives--;
+            updateLivesUI();
+            if (state[`p${state.game.turn}`].lives <= 0) {
+                showModal("Gagal!", "Nyawa habis. Konsentrasi, Maestro!", false);
+            }
+        }
+    }
+
+    function updateLivesUI() {
+        const container = document.getElementById('active-lives');
+        container.innerHTML = "";
+        const p = state[`p${state.game.turn}`];
+        for (let i = 0; i < 3; i++) {
+            container.innerHTML += i < p.lives ? '❤️' : '🖤';
+        }
+    }
+
+    function startTimer() {
+        clearInterval(state.game.interval);
+        state.game.interval = setInterval(() => {
+            state.game.timer--;
+            const m = Math.floor(state.game.timer / 60);
+            const s = state.game.timer % 60;
+            document.getElementById('timer-arena').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            
+            if (state.game.timer <= 0) {
+                clearInterval(state.game.interval);
+                showModal("Waktu Habis!", "Tempo tari terputus. Coba lagi!", false);
+            }
+        }, 1000);
+    }
+
+    function checkVictory() {
+        const cleanWord = state.game.word.replace(/\s/g, '');
+        const isWon = [...cleanWord].every(c => state.game.guessed.includes(c));
+        
+        if (isWon) {
+            clearInterval(state.game.interval);
+            const duration = Math.floor((Date.now() - state.game.startTime) / 1000);
+            
+            if (state.game.turn === 1) {
+                showModal("Maestro 1 Selesai!", `${state.p1.name} berhasil! Giliran Maestro 2 bersiap.`, true, () => {
+                    state.game.turn = 2;
+                    loadQuizForCurrentPlayer();
+                });
+            } else {
+                showModal("Tantangan Selesai!", `Luar biasa! Kedua Maestro berhasil menyelesaikan panggung ini.`, true, () => {
+                    // Update Progress
+                    if (state.game.challengeNum === state.p1.progress) {
+                        state.p1.progress++;
+                    }
+                    showMap();
+                }, duration);
+            }
+        }
+    }
+
+    function showModal(title, msg, success, callback, time = null) {
+        const modal = document.getElementById('modal');
+        document.getElementById('modal-title').innerText = title;
+        document.getElementById('modal-msg').innerText = msg;
+        document.getElementById('modal-icon').innerText = success ? "🏆" : "🍵";
+        
+        const timeEl = document.getElementById('modal-time');
+        if(time !== null) {
+            timeEl.innerText = `${time} detik`;
+            document.getElementById('modal-stats').classList.remove('hidden');
+        } else {
+            document.getElementById('modal-stats').classList.add('hidden');
+        }
+
+        const btn = document.getElementById('modal-btn');
+        btn.innerText = success ? (state.game.turn === 1 ? "LANJUT KE P2" : "SELESAI") : "ULANGI";
+        btn.onclick = () => {
+            modal.classList.add('hidden');
+            if (success) {
+                if (callback) callback();
+            } else {
+                // Pengulangan tantangan: Load soal baru
+                loadQuizForCurrentPlayer();
+            }
+        };
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function backToProfile() {
+        document.getElementById('screen-map').classList.add('hidden');
+        document.getElementById('screen-profile').classList.remove('hidden');
+    }
+
+    init();
+</script>
+
+</body>
+</html>
